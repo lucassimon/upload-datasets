@@ -1,0 +1,15 @@
+-r base.txt
+
+pytest
+pytest-cov
+pytest-flask
+pytest-runner
+Faker
+coverage
+coverage-badge==0.2.0
+Fabric==2.4.0
+snapshottest
+factory_boy
+mongomock==3.17.0
+pylint
+pylama
