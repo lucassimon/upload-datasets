@@ -1,0 +1,7 @@
+id,payer_name,document_amount,payed_amount,payer_id_number,payer_address,barcode,typable_line,number,document_number,due_date,city,state,zip_code,bank_answer_date,pdf_upload_date,status,callback,object_id,extra
+1,MATHEUS VIEIRA LOBO,80,0,15390938755,Avenida Governador Christiano Dias Lopes Filho 118 casa Gilberto Machado,,,,,9/27/19,CACHOEIRO DE ITAPEMIRIM,ES,29303320,30:33.7,NULL,unavailable,http://localhost:8000/tickets/update-status,0,
+2,MATHEUS VIEIRA LOBO,80,0,15390938755,Avenida Governador Christiano Dias Lopes Filho 118 casa Gilberto Machado,,,,,9/27/19,CACHOEIRO DE ITAPEMIRIM,ES,29303320,49:55.9,49:56.1,pending,http://localhost:8000/tickets/update-status,0,
+3,BARBARA CRISTINA CARNEIRO AZEVEDO,80,0,9697703671,RUA DAS ESTRELAS 135 AP 402 TORRE 1 VILA DA SERRA,,,,,9/30/19,NOVA LIMA,MG,34006089,12:02.6,12:03.0,pending,http://localhost:8000/tickets/update-status,0,
+4,BARBARA CRISTINA CARNEIRO AZEVEDO,80,0,9697703671,RUA DAS ESTRELAS 135 AP 402 TORRE 1 VILA DA SERRA,,,,,9/30/19,NOVA LIMA,MG,34006089,12:40.2,12:40.4,pending,http://localhost:8000/tickets/update-status,0,
+5,MARINA LOUREN՚O DE MEDEIROS,80,0,2110382619,RUA GONCALVES DIAS 3019 1302 SANTO AGOSTINHO,,,,,9/30/19,BELO HORIZONTE,MG,30140093,12:24.2,12:24.4,pending,http://localhost:8000/tickets/update-status,0,
+6,PAULA HO PARREIRA,40,0,12602975605,RUA CAMAPUAN 939 Casa GRAJAU,,,,,10/13/19,BELO HORIZONTE,MG,30431236,14:26.7,14:26.8,pending,http://localhost:8000/tickets/update-status,0,
