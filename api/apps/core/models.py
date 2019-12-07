@@ -26,5 +26,7 @@ class Dataset(db.Document):
 class Log(db.Document):
     meta = {"collection": "logs"}
 
+    # '{row: 0, column: "status"}: "unavailable" is not in the list of legal options (pending, paid, due, error)'
+
     created = DateTimeField(default=datetime.now)
     updated = DateTimeField(default=get_today())

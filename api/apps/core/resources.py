@@ -23,12 +23,15 @@ class DatasetUploadResource(Resource):
     def post(self, *args, **kwargs):
         resource = "Dataset upload"
         response = Response(resource)
+        repo = repositories.DatasetRepo()
 
         parse = reqparse.RequestParser()
         parse.add_argument("dataset_file", type=FileStorage, location="files")
+        parse.add_argument("kind", type=str, location="form")
         args = parse.parse_args()
 
         file = args["dataset_file"]
+        kind = args["kind"]
 
         if file:
             extension = os.path.splitext(file.filename)[1]
@@ -43,12 +46,15 @@ class DatasetUploadResource(Resource):
             file.save(path)
 
             try:
-                payload = {"filename": filename, "path": path}
-                dataset = repositories.DatasetRepo.create(payload)
+                payload = {
+                    "filename": filename,
+                    "path": current_app.config["UPLOAD_FOLDER"],
+                }
+                dataset = repo.create(payload)
 
                 # TODO: If the upload was did directly to s3 we can send the create event
                 # to rabbitmq or sqs to process this file uploaded instead use celery
-                tasks.unzip_file.delay(f"{dataset.id}")
+                tasks.process(f"{dataset.id}", kind)
 
             except (NotUniqueError, ValidationError, Exception) as e:
                 response.exception(description=e.__str__())
