@@ -1,6 +1,6 @@
 import os
 import uuid
-from flask import request, current_app
+from flask import current_app
 from flask.wrappers import Response as FlaskResponse
 
 
@@ -16,7 +16,7 @@ from apps.responses import Response
 
 
 # Local
-from . import repositories, models, tasks
+from . import repositories, tasks, schemas
 
 
 class DatasetUploadResource(Resource):
@@ -54,7 +54,7 @@ class DatasetUploadResource(Resource):
 
                 # TODO: If the upload was did directly to s3 we can send the create event
                 # to rabbitmq or sqs to process this file uploaded instead use celery
-                tasks.process(f"{dataset.id}", kind)
+                tasks.process.delay(f"{dataset.id}", kind)
 
             except (NotUniqueError, ValidationError, Exception) as e:
                 response.exception(description=e.__str__())
@@ -65,4 +65,82 @@ class DatasetUploadResource(Resource):
 
         return response.data_invalid(
             {"file": "Não encontramos um arquivo a ser carregado"}
+        )
+
+
+class DatasetPageList(Resource):
+    def get(self, *args, **kwargs):
+        resource = "Dataset upload"
+        response = Response(resource)
+        repo = repositories.DatasetRepo()
+
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            "per_page", type=int, required=False, default=10, location="args"
+        )
+        args = parser.parse_args()
+        schema = schemas.ListDataSetSchema(many=True)
+        page = kwargs["page_id"]
+        page_size = args["per_page"]
+
+        criteria = {}
+
+        try:
+            datasets = repo.paginate(criteria, page, page_size)
+
+        except Exception as e:
+            return response.exception(description=e.__str__())
+
+        # criamos dados extras a serem respondidos
+        extra = {
+            "page": datasets.page,
+            "pages": datasets.pages,
+            "total": datasets.total,
+            "params": {"page_size": page_size},
+        }
+
+        # fazemos um dump dos objetos pesquisados
+        result = schema.dump(datasets.items)
+
+        return response.ok(
+            Messages.RESOURCE_FETCHED_PAGINATED.value.format(resource),
+            data=result.data,
+            **extra,
+        )
+
+
+class DatasetResource(Resource):
+    def get(self, *args, **kwargs):
+        resource = "Dataset"
+        response = Response(resource)
+        repo = repositories.DatasetRepo()
+        schema = schemas.DetailDataSetSchema()
+
+        dataset = repo.by_id(kwargs["dataset_id"])
+        if isinstance(dataset, FlaskResponse):
+            return dataset
+
+        result = schema.dump(dataset)
+
+        return response.ok(
+            Messages.RESOURCE_FETCHED.value.format(resource), data=result.data
+        )
+
+
+class LogsResource(Resource):
+    def get(self, *args, **kwargs):
+        resource = "Logs from dataset"
+        response = Response(resource)
+        repo = repositories.LogRepo()
+        schema = schemas.ListLogSchema(many=True)
+        criteria = {"dataset_id": kwargs["dataset_id"]}
+
+        logs = repo.by_criteria(criteria)
+        if isinstance(logs, FlaskResponse):
+            return logs
+
+        result = schema.dump(logs)
+
+        return response.ok(
+            Messages.RESOURCE_FETCHED_PAGINATED.value.format(resource), data=result.data
         )

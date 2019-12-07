@@ -29,6 +29,12 @@ def client():
 
 
 @pytest.fixture(scope="session")
+def auth(client):
+    # TODO: Put auth User and tokens here
+    return client
+
+
+@pytest.fixture(scope="session")
 def mongo(request, auth):
     from apps.db import db
 

@@ -3,7 +3,7 @@
 from datetime import datetime
 
 # Third
-from mongoengine import StringField, DateTimeField
+from mongoengine import StringField, DateTimeField, IntField
 
 # Apps
 from apps.db import db
@@ -26,7 +26,11 @@ class Dataset(db.Document):
 class Log(db.Document):
     meta = {"collection": "logs"}
 
-    # '{row: 0, column: "status"}: "unavailable" is not in the list of legal options (pending, paid, due, error)'
+    dataset_id = StringField(required=True)
+    row = IntField(required=True)
+    column = StringField(required=True)
+    message = StringField(required=True)
+    value = StringField(required=True)
 
     created = DateTimeField(default=datetime.now)
     updated = DateTimeField(default=get_today())

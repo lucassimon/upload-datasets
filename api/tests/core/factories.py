@@ -16,3 +16,9 @@ class DatasetFactory(factory.mongoengine.MongoEngineFactory):
 class LogFactory(factory.mongoengine.MongoEngineFactory):
     class Meta:
         model = Log
+
+    dataset_id = "5ce089d4fb5d1b3bd3ad96a2"
+    row = 0
+    column = "status"
+    message = "this column does not accepts unvailable in status"
+    value = "unavailable"

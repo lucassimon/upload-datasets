@@ -1,5 +1,7 @@
 import pandas as pd
 
+from apps.core.models import Log
+from apps.core.repositories import LogRepo
 from . import schemas
 
 
@@ -30,6 +32,23 @@ class ImportDataset:
         Save errors on database
         """
         # TODO save all errors with batch flow
+        logs = [
+            Log(
+                dataset_id=uploaded_id,
+                row=i.row,
+                value=i.value,
+                column=i.column,
+                message=i.message,
+            )
+            for i in errors
+        ]
+
+        try:
+            repo = LogRepo()
+            repo.insert(logs)
+
+        except Exception as e:
+            raise e
 
     def extract(self):
         """
@@ -50,11 +69,14 @@ class ImportDataset:
         self.remove_duplicated()
         errors = self.validate()
 
-        errors_count = len(errors)
+        if errors:
 
-        if errors_count:
-            self.log_errors(uploaded_id, errors)
+            try:
+                self.log_errors(uploaded_id, errors)
+            except Exception as e:
+                raise e
 
+            errors_count = len(errors)
             # TODO Create a Custom exception?
             raise ValueError(f"There are {errors_count} errors")
 
