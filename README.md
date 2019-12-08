@@ -1,6 +1,6 @@
 # Import datasets
 
-[dashboard](./dashboard.gif)
+![dashboard](./dashboard.gif)
 
 ## Tecnologias
 
