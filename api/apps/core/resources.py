@@ -60,7 +60,8 @@ class DatasetUploadResource(Resource):
                 response.exception(description=e.__str__())
 
             return response.ok(
-                Messages.RESOURCE_CREATED.value.format(resource), data={}
+                Messages.RESOURCE_CREATED.value.format(resource),
+                data={"id": f"{dataset.id}"},
             )
 
         return response.data_invalid(
@@ -139,7 +140,7 @@ class LogsPageList(Resource):
             "per_page", type=int, required=False, default=10, location="args"
         )
         args = parser.parse_args()
-        schema = schemas.ListDataSetSchema(many=True)
+        schema = schemas.ListLogSchema(many=True)
         page = kwargs["page_id"]
         page_size = args["per_page"]
 
