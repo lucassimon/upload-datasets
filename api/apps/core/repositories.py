@@ -68,19 +68,6 @@ class LogRepo:
         self.resource = "Log"
         self.response = Response(self.resource)
 
-    def create(self, data: dict):
-        try:
-            return self.model(**data).save()
-
-        except NotUniqueError as e:
-            raise e
-
-        except ValidationError as e:
-            raise e
-
-        except Exception as e:
-            raise e
-
     def insert(self, logs: list):
         """Bulk create"""
         try:
@@ -95,18 +82,11 @@ class LogRepo:
         except Exception as e:
             raise e
 
-    def by_criteria(
-        self, criteria: dict, order: str = "created", items: int = None, status=None
-    ):
+    def paginate(self, criteria: dict, page, per_page, order: str = "created"):
         try:
-            if status:
-                log = self.model.objects(status, **criteria).order_by(order)
-            else:
-                log = self.model.objects(**criteria).order_by(order)
-            if items:
-                return log[:items]
-
-            return log
+            return (
+                self.model.objects(**criteria).order_by(order).paginate(page, per_page)
+            )
 
         except Exception as e:
-            return self.response.exception(description=e.__str__())
+            raise e

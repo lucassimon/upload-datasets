@@ -127,20 +127,43 @@ class DatasetResource(Resource):
         )
 
 
-class LogsResource(Resource):
+class LogsPageList(Resource):
     def get(self, *args, **kwargs):
         resource = "Logs from dataset"
         response = Response(resource)
         repo = repositories.LogRepo()
         schema = schemas.ListLogSchema(many=True)
+
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            "per_page", type=int, required=False, default=10, location="args"
+        )
+        args = parser.parse_args()
+        schema = schemas.ListDataSetSchema(many=True)
+        page = kwargs["page_id"]
+        page_size = args["per_page"]
+
         criteria = {"dataset_id": kwargs["dataset_id"]}
 
-        logs = repo.by_criteria(criteria)
-        if isinstance(logs, FlaskResponse):
-            return logs
+        try:
+            logs = repo.paginate(criteria, page, page_size)
 
-        result = schema.dump(logs)
+        except Exception as e:
+            return response.exception(description=e.__str__())
+
+        # criamos dados extras a serem respondidos
+        extra = {
+            "page": logs.page,
+            "pages": logs.pages,
+            "total": logs.total,
+            "params": {"page_size": page_size},
+        }
+
+        # fazemos um dump dos objetos pesquisados
+        result = schema.dump(logs.items)
 
         return response.ok(
-            Messages.RESOURCE_FETCHED_PAGINATED.value.format(resource), data=result.data
+            Messages.RESOURCE_FETCHED_PAGINATED.value.format(resource),
+            data=result.data,
+            **extra,
         )

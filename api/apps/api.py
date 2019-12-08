@@ -41,6 +41,8 @@ def configure_api(app):
     api.add_resource(CoreResources.DatasetPageList, "/datasets/page/<int:page_id>")
     api.add_resource(CoreResources.DatasetResource, "/datasets/<string:dataset_id>")
 
-    api.add_resource(CoreResources.LogsResource, "/logs/<string:dataset_id>")
+    api.add_resource(
+        CoreResources.LogsPageList, "/logs/<string:dataset_id>/page/<int:page_id>"
+    )
 
     api.init_app(app)

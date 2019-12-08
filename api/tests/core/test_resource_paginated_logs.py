@@ -16,7 +16,7 @@ class TestLog:
         Log.objects.delete()
 
     def make_request(self, client, dataset_id):
-        url = f"/logs/{dataset_id}"
+        url = f"/logs/{dataset_id}/page/1"
         return client.get(url, content_type="application/json")
 
     def test_should_response_logs(self, auth, mongo, snapshot):
