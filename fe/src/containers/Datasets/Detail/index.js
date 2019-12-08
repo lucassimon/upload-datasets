@@ -1,38 +1,31 @@
 import React from 'react';
-import axios from 'axios';
 import { Container, Grid, Header } from 'semantic-ui-react';
 
 import DataSetService from '../../../services/DataSetService';
-import LogService from '../../../services/LogSetService';
 
-import List from '../../Logs/List/index';
+import List from '../../Logs/';
 
 class Detail extends React.Component {
   state = { dataset: null, logs: [] }
 
   componentDidMount() {
+    this.fetch();
+  }
+
+  fetch = async () => {
     const { match: { params: { id } } } = this.props;
-
-    axios.all([
-      DataSetService.getById(id),
-      LogService.listByDatasetId(id),
-    ]).then(axios.spread((datasetRes, logsRes) => {
-      const { data: datasetData } = datasetRes.data;
-      const { data: logsData } = logsRes.data;
-
-      if (datasetData) {
-        this.setState({ dataset: datasetData });
-      } else {
-        this.setState({ dataset: null });
-      }
-      if (logsData) {
-        this.setState({ logs: logsData });
-      }
-    })).catch(error => console.log(error));
+    try {
+      const response = await DataSetService.getById(id);
+      const { data } = response.data;
+      this.setState({ dataset: data });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   render() {
-    const { dataset, logs } = this.state;
+    const { match: { params: { id } } } = this.props;
+    const { dataset } = this.state;
     if (dataset === null) { return null; }
     return (
       <div style={{ marginTop: '7em' }}>
@@ -46,7 +39,7 @@ class Detail extends React.Component {
             <Grid.Row>
               <Grid.Column>
                 <Header>Logs:</Header>
-                <List logs={logs} />
+                <List datasetId={id} />
               </Grid.Column>
             </Grid.Row>
           </Grid>

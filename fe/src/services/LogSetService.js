@@ -1,8 +1,8 @@
 import { apiClient } from './config';
 
 const Service = {
-  listByDatasetId(dataSetId) {
-    const url = `/logs/${dataSetId}`;
+  listByDatasetId(dataSetId, page) {
+    const url = `/logs/${dataSetId}/page/${page}`;
     return apiClient.get(url);
   },
 };
