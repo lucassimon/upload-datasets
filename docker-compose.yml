@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  redis:
+    image: redis:latest
+    hostname: redis
+    ports:
+      - '6379:6379'
+  web:
+    build: ./api
+    command: python app.py
+    ports:
+      - '5000:5000'
+    links:
+      - redis:redis
+      - celery
+  celery:
+    build: ./api
+    restart: always
+    command: celery worker -A celery_worker.celery --loglevel=info --pool=solo
+    depends_on:
+      - redis
+    links:
+      - redis:redis
+
